@@ -81,9 +81,9 @@
          </size>
         </property>
         <property name="title">
-         <string>Configuration</string>
+         <string/>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QGridLayout" name="gridLayout_2">
          <property name="leftMargin">
           <number>3</number>
          </property>
@@ -96,12 +96,12 @@
          <property name="bottomMargin">
           <number>3</number>
          </property>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_5">
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item>
+           <item row="0" column="0">
             <widget class="QTabWidget" name="tabWidget">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -244,6 +244,7 @@
                    <property name="font">
                     <font>
                      <pointsize>50</pointsize>
+                     <strikeout>false</strikeout>
                     </font>
                    </property>
                    <property name="lineWidth">
@@ -477,7 +478,7 @@
                   </widget>
                  </item>
                  <item row="9" column="0">
-                  <widget class="QPushButton" name="pushButton_Stop">
+                  <widget class="QPushButton" name="pushButton_Control_Stop">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -507,23 +508,43 @@
              </widget>
             </widget>
            </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-            </layout>
-           </item>
           </layout>
          </item>
-         <item>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="horizontalSpacing">
-            <number>6</number>
-           </property>
+         <item row="0" column="1">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QGroupBox" name="groupBox_Log">
+             <property name="minimumSize">
+              <size>
+               <width>250</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Log</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_Motors">
+             <property name="title">
+              <string>Motors</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_STOP">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>STOP</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -534,6 +555,35 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>772</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFiles">
+    <property name="title">
+     <string>Files</string>
+    </property>
+    <addaction name="actionQuit_2"/>
+   </widget>
+   <widget class="QMenu" name="menuConnection">
+    <property name="title">
+     <string>Connection</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+   </widget>
+   <addaction name="menuFiles"/>
+   <addaction name="menuConnection"/>
+   <addaction name="menuAbout"/>
+  </widget>
   <action name="actionQuit">
    <property name="icon">
     <iconset theme="quit">
@@ -554,6 +604,11 @@
   <action name="actionSave_to_file">
    <property name="text">
     <string>Save to file...</string>
+   </property>
+  </action>
+  <action name="actionQuit_2">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>
