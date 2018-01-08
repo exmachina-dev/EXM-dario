@@ -35,16 +35,14 @@ class Dario(QMainWindow):
         quitAction.triggered.connect(self.doQuit)
 
         fileMenu = self.menuBar().addMenu('Tools')
-        connexionAction = fileMenu.addAction('Connexion')
-        connexionAction.triggered.connect(self.doConnexion)
 
         aboutAction = self.menuBar().addAction('About')
         aboutAction.triggered.connect(self.doAbout)
 
-
         self.show()
 
     def doQuit (self):
+        # Options save method may be called here
         QApplication.quit()
 
     def doAbout(self):
@@ -52,14 +50,18 @@ class Dario(QMainWindow):
         '''Dario - Version: v''' + str(VERSION),
         QMessageBox.Ok)
 
-    def doConnexion(self):
-
     def doQuit(self):
-        self.windows2 = None
-        QWidget.quit()
+        self.quit()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    base_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+    os.chdir(base_path)
+    fstyle = os.path.join(base_path, './style.qss')
+    with open(fstyle, 'r') as f:
+        style = f.readlines()
+    app.setStyleSheet(' '.join(style))
 
     w = Dario()
 
