@@ -50,9 +50,6 @@ class Dario(QMainWindow):
         '''Dario - Version: v''' + str(VERSION),
         QMessageBox.Ok)
 
-    def doQuit(self):
-        self.quit()
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
