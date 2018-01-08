@@ -61,6 +61,13 @@ class Dario(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
+    base_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+    os.chdir(base_path)
+    fstyle = os.path.join(base_path, './style.qss')
+    with open(fstyle, 'r') as f:
+        style = f.readlines()
+    app.setStyleSheet(' '.join(style))
+
     w = Dario()
 
     sys.exit(app.exec_())
