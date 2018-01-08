@@ -112,9 +112,6 @@
              <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
                <widget class="QTextEdit" name="log_list">
-                <property name="sizeAdjustPolicy">
-                 <enum>QAbstractScrollArea::AdjustToContents</enum>
-                </property>
                 <property name="autoFormatting">
                  <set>QTextEdit::AutoAll</set>
                 </property>
