@@ -314,9 +314,42 @@
                      <property name="autoExclusive">
                       <bool>true</bool>
                      </property>
+                     <property name="autoDefault">
+                      <bool>false</bool>
+                     </property>
+                     <property name="default">
+                      <bool>false</bool>
+                     </property>
+                     <property name="flat">
+                      <bool>false</bool>
+                     </property>
                     </widget>
                    </item>
                   </layout>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QLabel" name="Value_Dec">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>75</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>25</pointsize>
+                    </font>
+                   </property>
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string>0.00</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item row="6" column="0">
                   <widget class="QLabel" name="Value_Acc">
@@ -370,30 +403,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="1">
-                  <widget class="QLabel" name="Value_Dec">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>75</height>
-                    </size>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>25</pointsize>
-                    </font>
-                   </property>
-                   <property name="layoutDirection">
-                    <enum>Qt::LeftToRight</enum>
-                   </property>
-                   <property name="text">
-                    <string>0.00</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="1" column="1">
                   <widget class="QLabel" name="Value_VelInst">
                    <property name="minimumSize">
@@ -415,13 +424,6 @@
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QPushButton" name="pushButton_SendVelo">
-                   <property name="text">
-                    <string>Send</string>
                    </property>
                   </widget>
                  </item>
@@ -480,6 +482,16 @@
                    </item>
                   </layout>
                  </item>
+                 <item row="3" column="1">
+                  <widget class="QPushButton" name="pushButton_SendVelo">
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string>Send</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="4" column="1">
                   <spacer name="verticalSpacer_2">
                    <property name="orientation">
@@ -503,40 +515,15 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0" colspan="2">
-                  <widget class="QSlider" name="horizontalSlider_Velocity">
-                   <property name="mouseTracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="tabletTracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="autoFillBackground">
-                    <bool>false</bool>
-                   </property>
-                   <property name="tracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="invertedAppearance">
-                    <bool>false</bool>
-                   </property>
-                   <property name="tickPosition">
-                    <enum>QSlider::NoTicks</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="0">
-                  <widget class="QPushButton" name="pushButton_SendAcc">
+                 <item row="8" column="1">
+                  <widget class="QPushButton" name="pushButton_SendDec">
                    <property name="text">
                     <string>Send</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="1">
-                  <widget class="QPushButton" name="pushButton_SendDec">
+                 <item row="8" column="0">
+                  <widget class="QPushButton" name="pushButton_SendAcc">
                    <property name="text">
                     <string>Send</string>
                    </property>
@@ -562,6 +549,16 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="7" column="1">
+                  <widget class="QSlider" name="horizontalSlider_Dec">
+                   <property name="pageStep">
+                    <number>100</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="5" column="1">
                   <widget class="QLabel" name="label_4">
                    <property name="text">
@@ -569,20 +566,6 @@
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="0">
-                  <widget class="QSlider" name="horizontalSlider_Acc">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="1">
-                  <widget class="QSlider" name="horizontalSlider_Dec">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
@@ -599,6 +582,56 @@
                    </property>
                    <property name="checkable">
                     <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QSlider" name="horizontalSlider_Acc">
+                   <property name="pageStep">
+                    <number>100</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QSlider" name="horizontalSlider_Velocity">
+                   <property name="mouseTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="tabletTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>100</number>
+                   </property>
+                   <property name="pageStep">
+                    <number>100</number>
+                   </property>
+                   <property name="sliderPosition">
+                    <number>0</number>
+                   </property>
+                   <property name="tracking">
+                    <bool>true</bool>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="invertedAppearance">
+                    <bool>false</bool>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::NoTicks</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>0</number>
                    </property>
                   </widget>
                  </item>
