@@ -15,6 +15,7 @@ VERSION = '0.1'
 
 class Dario(QMainWindow):
     UIFILE = '.\dario.ui'
+    OPTIONSFILE = '.\dario_config.ini'
 
     def __init__(self):
         super().__init__()
@@ -25,11 +26,16 @@ class Dario(QMainWindow):
         self.setWindowTitle('Dario')
 
         _path = os.path.dirname(os.path.realpath(__file__))
+
+        self.OPTIONSFILE = _path + self.OPTIONSFILE
         self.main = uic.loadUi(_path + self.UIFILE)
 
         self.setCentralWidget(self.main)
 
         self._menuBar()
+
+        self.doOptionLoad()
+        print(self._defaultProfil)
 
         self.log_list = self.main.findChild(QTextEdit,'log_list')
         self.cmd_line = self.main.findChild(QLineEdit, 'cmd_line')
@@ -43,11 +49,13 @@ class Dario(QMainWindow):
 
         self.cmd_line.returnPressed.connect(self._cmd_send)
 
+
     def _menuBar(self):
         fileMenu = self.menuBar().addMenu('File')
 
         quitAction = fileMenu.addAction('Quit')
         quitAction.triggered.connect(self.doQuit)
+
 
         fileMenu = self.menuBar().addMenu('Tools')
 
@@ -66,6 +74,22 @@ class Dario(QMainWindow):
     def _cmd_send(self):
         self.cmd_line.clear()
 
+    def doOptionLoad(self):
+        with open(self.OPTIONSFILE, 'r') as f:
+            cfg = {}
+            for l in f.readlines():
+                try :
+                    k, v = l.split(' = ')
+                    cfg[k] = v
+                except Exception:
+                    pass
+        self.setCurrentOptions(cfg)
+
+    def setCurrentOptions(self, cfg):
+        opts = ('defaultProfil')
+        for k, v in cfg.items():
+            if k in opts:
+                setattr(self, '_' + k, v)
 
 class EmbeddedLogHandler(lg.Handler):
 
