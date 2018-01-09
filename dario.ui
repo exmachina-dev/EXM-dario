@@ -212,7 +212,7 @@
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>2</number>
              </property>
              <property name="usesScrollButtons">
               <bool>true</bool>
@@ -779,7 +779,53 @@
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_3">
                <item>
-                <layout class="QVBoxLayout" name="verticalLayout_2"/>
+                <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,0,0,2">
+                 <item>
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Profil list :</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QTextEdit" name="Profil_List"/>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_3">
+                   <item>
+                    <widget class="QPushButton" name="Load_Profil">
+                     <property name="text">
+                      <string>Load</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="Save_Profil">
+                     <property name="text">
+                      <string>Save</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="Delete_Profil">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>Profil parameters :</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QTextEdit" name="Profil_Parameters"/>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
