@@ -2,14 +2,15 @@ import sys
 from functools import partial
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
-from PyQt5.QtWidgets import QTextEdit, QLineEdit
-from PyQt5.QtGui import QColor, QTextCursor
-
+from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView
+from PyQt5.QtGui import QColor, QTextCursor, QFont
+from PyQt5.QtCore import Qt
 import PyQt5.uic as uic
 
 import logging as lg
 
 import os.path
+from os import listdir
 
 VERSION = '0.1'
 
@@ -29,13 +30,17 @@ class Dario(QMainWindow):
 
         self.OPTIONSFILE = _path + self.OPTIONSFILE
         self.main = uic.loadUi(_path + self.UIFILE)
+        self.Profil_List = os.listdir(_path + '\profil')
 
         self.setCentralWidget(self.main)
 
         self._menuBar()
 
         self.doOptionLoad()
-        print(self._defaultProfil)
+
+
+        self.profilView = self.main.findChild(QListView, 'profil_view' )
+        self.doProfilList()
 
         self.log_list = self.main.findChild(QTextEdit,'log_list')
         self.cmd_line = self.main.findChild(QLineEdit, 'cmd_line')
@@ -62,7 +67,15 @@ class Dario(QMainWindow):
         aboutAction = self.menuBar().addAction('About')
         aboutAction.triggered.connect(self.doAbout)
 
-    def doQuit (self):
+    def doProfilList(self):
+        for i in self.Profil_List :
+            self.profilView.addItem(i)
+            if i == self._defaultProfil :
+                self._currentProfil = self.profilView.findItems(i, Qt.MatchExactly)
+                self.profilView.setCurrentItem(self._currentProfil[0])
+                self._currentProfil[0].setFont(QFont('MS Shell Dlg 2',8,QFont.Bold))
+
+    def doQuit(self):
         # Options save method may be called here
         QApplication.quit()
 
