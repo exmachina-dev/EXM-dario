@@ -2,7 +2,7 @@ import sys
 from functools import partial
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
-from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView
+from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView, QTableWidget
 from PyQt5.QtGui import QColor, QTextCursor, QFont
 from PyQt5.QtCore import Qt
 import PyQt5.uic as uic
@@ -76,9 +76,10 @@ class Dario(QMainWindow):
         self.doOptionLoad()
 
 
-        self.profileView = self.main.findChild(QListView, 'profile_view' )
+        self.profileView = self.main.findChild(QListView, 'profile_list' )
+        self.profileParameters = self.main.findChild(QTableWidget, 'profile_parameters')
         self.doProfileList()
-
+        self.doProfileParameters()
         self.doProfileLoad()
 
         self.log_list = self.main.findChild(QTextEdit,'log_list')
@@ -119,12 +120,23 @@ class Dario(QMainWindow):
         _path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'profile', self._defaultProfile)
         self._ProfileLoaded.read(_path)
 
+        '''
         for section_name in self._ProfileLoaded:
             print('Section:', section_name)
             section = self._ProfileLoaded[section_name]
             print('   Options:', list(section.keys()))
             for name in section:
                 print('      {} = {}'.format(name, section[name]))
+        '''
+
+    def doProfileParameters(self):
+        self.profileParameters.setHorizontalHeaderLabels(('Parameters', 'Values', 'Units'))
+        LabelList = []
+        for key in _PROFILE_OPTIONS.keys() :
+            for label in _PROFILE_OPTIONS[key]:
+                LabelList.append(label)
+        print(LabelList)
+        self.profileParameters.setVerticalHeaderLabels(LabelList)
 
     def doQuit(self):
         # Options save method may be called here
