@@ -9,10 +9,47 @@ import PyQt5.uic as uic
 
 import logging as lg
 
+from configparser import ConfigParser
+
 import os.path
 from os import listdir
 
 VERSION = '0.1'
+
+_PROFILE_OPTIONS = {
+    'machine': {
+        'ip_address': ('str', None),
+        'operating_mode': ('str', None),
+    },
+    'motor': {
+        'acceleration': ('float', 'm.s-1'),
+        'deceleration': ('float', 'm.s-1'),
+        'control_mode': ('int', None),
+
+        'entq_kp': ('float', None),
+
+        'entq_kp_vel': ('float', None),
+        'entq_ki': ('float', None),
+        'entq_kd': ('float', None),
+        'torque_rise_time': ('float', 'ms'),
+        'torque_fall_time': ('float', 'ms'),
+
+        'application_coefficient': ('float', None),
+        'application_velocity_unit': ('str', None),
+        'application_position_unit': ('str', None),
+
+        'invert': ('bool', None),
+
+        'acceleration_time_mode': ('bool', None),
+
+        'custom_max_velocity': ('float', None),
+
+        'custom_max_acceleration': ('float', None),
+        'custom_max_deceleration': ('float', None),
+        'custom_max_position': ('float', None),
+        'custom_min_position': ('float', None),
+    }
+}
 
 class Dario(QMainWindow):
     UIFILE = '.\dario.ui'
@@ -30,7 +67,7 @@ class Dario(QMainWindow):
 
         self.OPTIONSFILE = _path + self.OPTIONSFILE
         self.main = uic.loadUi(_path + self.UIFILE)
-        self.Profil_List = os.listdir(_path + '\profil')
+        self.Profile_List = os.listdir(_path + '\profile')
 
         self.setCentralWidget(self.main)
 
@@ -39,8 +76,10 @@ class Dario(QMainWindow):
         self.doOptionLoad()
 
 
-        self.profilView = self.main.findChild(QListView, 'profil_view' )
-        self.doProfilList()
+        self.profileView = self.main.findChild(QListView, 'profile_view' )
+        self.doProfileList()
+
+        self.doProfileLoad()
 
         self.log_list = self.main.findChild(QTextEdit,'log_list')
         self.cmd_line = self.main.findChild(QLineEdit, 'cmd_line')
@@ -67,13 +106,25 @@ class Dario(QMainWindow):
         aboutAction = self.menuBar().addAction('About')
         aboutAction.triggered.connect(self.doAbout)
 
-    def doProfilList(self):
-        for i in self.Profil_List :
-            self.profilView.addItem(i)
-            if i == self._defaultProfil :
-                self._currentProfil = self.profilView.findItems(i, Qt.MatchExactly)
-                self.profilView.setCurrentItem(self._currentProfil[0])
-                self._currentProfil[0].setFont(QFont('MS Shell Dlg 2',8,QFont.Bold))
+    def doProfileList(self):
+        for i in self.Profile_List :
+            self.profileView.addItem(i)
+            if i == self._defaultProfile :
+                self._currentProfile = self.profileView.findItems(i, Qt.MatchExactly)
+                self.profileView.setCurrentItem(self._currentProfile[0])
+                self._currentProfile[0].setFont(QFont('MS Shell Dlg 2',8,QFont.Bold))
+
+    def doProfileLoad(self):
+        self._ProfileLoaded =  ConfigParser()
+        _path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'profile', self._defaultProfile)
+        self._ProfileLoaded.read(_path)
+
+        for section_name in self._ProfileLoaded:
+            print('Section:', section_name)
+            section = self._ProfileLoaded[section_name]
+            print('   Options:', list(section.keys()))
+            for name in section:
+                print('      {} = {}'.format(name, section[name]))
 
     def doQuit(self):
         # Options save method may be called here
@@ -99,7 +150,7 @@ class Dario(QMainWindow):
         self.setCurrentOptions(cfg)
 
     def setCurrentOptions(self, cfg):
-        opts = ('defaultProfil')
+        opts = ('defaultProfile')
         for k, v in cfg.items():
             if k in opts:
                 setattr(self, '_' + k, v)

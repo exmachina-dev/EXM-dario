@@ -762,7 +762,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QListWidget" name="profil_view">
+                  <widget class="QListWidget" name="profile_view">
                    <property name="autoFillBackground">
                     <bool>false</bool>
                    </property>
