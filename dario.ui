@@ -809,50 +809,16 @@
                     <number>1</number>
                    </property>
                    <property name="rowCount">
-                    <number>21</number>
+                    <number>0</number>
                    </property>
                    <property name="columnCount">
-                    <number>2</number>
+                    <number>1</number>
                    </property>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
-                   <row/>
                    <column>
                     <property name="text">
                      <string>Parameters</string>
                     </property>
                    </column>
-                   <column>
-                    <property name="text">
-                     <string>Values</string>
-                    </property>
-                   </column>
-                   <item row="0" column="0">
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="flags">
-                     <set>ItemIsSelectable|ItemIsEnabled</set>
-                    </property>
-                   </item>
                   </widget>
                  </item>
                 </layout>

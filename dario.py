@@ -2,7 +2,8 @@ import sys
 from functools import partial
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
-from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView, QTableWidget
+from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QDoubleSpinBox, QSpinBox, QLabel, QCheckBox
 from PyQt5.QtGui import QColor, QTextCursor, QFont
 from PyQt5.QtCore import Qt
 import PyQt5.uic as uic
@@ -120,23 +121,30 @@ class Dario(QMainWindow):
         _path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'profile', self._defaultProfile)
         self._ProfileLoaded.read(_path)
 
-        '''
-        for section_name in self._ProfileLoaded:
-            print('Section:', section_name)
-            section = self._ProfileLoaded[section_name]
-            print('   Options:', list(section.keys()))
-            for name in section:
-                print('      {} = {}'.format(name, section[name]))
-        '''
 
     def doProfileParameters(self):
-        self.profileParameters.setHorizontalHeaderLabels(('Parameters', 'Values', 'Units'))
-        LabelList = []
-        for key in _PROFILE_OPTIONS.keys() :
-            for label in _PROFILE_OPTIONS[key]:
-                LabelList.append(label)
-        print(LabelList)
-        self.profileParameters.setVerticalHeaderLabels(LabelList)
+        _OPTION = ConfigParser()
+        _OPTION.read_dict(_PROFILE_OPTIONS)
+
+        self.profileParameters.setColumnCount(2)
+        self.profileParameters.setHorizontalHeaderLabels(('Values', 'Reset'))
+
+        for section in _PROFILE_OPTIONS.values():
+            for option, value in section.items():
+                row = self.profileParameters.rowCount()
+                self.profileParameters.insertRow(row)
+                self.profileParameters.setVerticalHeaderItem(row, QTableWidgetItem(option))
+                if value[0] == 'float':
+                    self.profileParameters.setCellWidget(row,0, QDoubleSpinBox())
+                    self.profileParameters.cellWidget(row,0).setSuffix(value[1])
+                elif value[0] == 'int':
+                    self.profileParameters.setCellWidget(row,0, QSpinBox())
+                    self.profileParameters.cellWidget(row,0).setSuffix(value[1])
+                elif value[0] == 'string':
+                    self.profileParameters.setCellWidget(row,0, QLineEdit())
+                    self.profileParameters.cellWidget(row,0).setSuffix(value[1])
+                elif value[0] == 'bool':
+                    self.profileParameters.setCellWidget(row,0, QCheckBox())
 
     def doQuit(self):
         # Options save method may be called here
