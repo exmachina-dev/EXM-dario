@@ -1,7 +1,2 @@
-*.s#*
-*.b#*
-*.l#*
-*.lck
-*.epf
-
-*.log
+*.pyc
+.ropeproject/
