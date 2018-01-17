@@ -109,9 +109,14 @@ class Dario(QMainWindow):
         about_action.triggered.connect(self.show_about_window)
 
     def get_profile_list(self):
+        files = os.listdir(self.profiles_path)
+        def is_conf(path):
+            return str(path).endswith('.conf')
+        self.profiles = [p[:-5] for p in filter(is_conf, files)]
+
         for profile in self.profiles :
             self.profile_view.addItem(profile)
-            if profile == self.default_profile :
+            if profile == self.options['configuration']['default_profile']:
                 profile_matches = self.profile_view.findItems(profile, Qt.MatchExactly)
                 if len(profile_matches) == 1:
                     self.current_profile = profile_matches[0]
@@ -120,7 +125,8 @@ class Dario(QMainWindow):
 
     def load_profile(self):
         self.profile_loaded = ConfigParser()
-        _path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'profile', self._defaultProfile)
+        _file = self.options['configuration']['default_profile'] + '.conf'
+        _path = os.path.join(self.profiles_path, _file)
         self.profile_loaded.read(_path)
 
     def create_profile_parameters_table(self):
@@ -162,28 +168,15 @@ class Dario(QMainWindow):
 
     def show_about_window(self):
         about = QMessageBox.information(self, 'About',
-                '''Dario - Version: v''' + str(VERSION),
+                'Dario - Version: <b>v{}</b>'.format(VERSION),
                 QMessageBox.Ok)
 
     def _cmd_send(self):
         self.cmd_line.clear()
 
     def load_options(self):
-        with open(self.options_file, 'r') as f:
-            cfg = {}
-            for l in f.readlines():
-                try :
-                    k, v = l.split(' = ')
-                    cfg[k] = v
-                except Exception:
-                    pass
-        self.setCurrentOptions(cfg)
-
-    def setCurrentOptions(self, cfg):
-        opts = ('defaultProfile')
-        for k, v in cfg.items():
-            if k in opts:
-                setattr(self, '_' + k, v)
+        self.options = ConfigParser()
+        self.options.read(self.options_file)
 
 class EmbeddedLogHandler(lg.Handler):
 
