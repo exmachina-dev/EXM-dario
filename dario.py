@@ -60,22 +60,23 @@ class Dario(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        _path = os.path.dirname(os.path.realpath(__file__))
+
+        self.options_file = os.path.join(_path, self.OPTIONS_FILE)
+        self.profiles_path = os.path.join(_path, 'profiles')
+        self.ui_file = os.path.join(_path, self.UI_FILE)
+
+        self.load_options()
+
         self.init_UI()
 
     def init_UI(self):
         self.setWindowTitle('Dario')
 
-        _path = os.path.dirname(os.path.realpath(__file__))
-
-        self.options_file = os.path.join(_path, self.OPTIONS_FILE)
-        self.main = uic.loadUi(os.path.join(_path, self.UI_FILE))
-        self.profiles = os.listdir(os.path.join(_path, 'profiles'))
-
+        self.main = uic.loadUi(self.ui_file)
         self.setCentralWidget(self.main)
 
         self.create_menubar()
-
-        self.load_options()
 
         self.profile_view = self.main.findChild(QListView, 'profile_list' )
         self.profile_paramaters_table = self.main.findChild(QTableWidget, 'profile_parameters')
