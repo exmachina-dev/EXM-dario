@@ -3,7 +3,7 @@ from functools import partial
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
 from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView, QTableWidget, QTableWidgetItem
-from PyQt5.QtWidgets import QDoubleSpinBox, QSpinBox, QLabel, QCheckBox
+from PyQt5.QtWidgets import QDoubleSpinBox, QSpinBox, QLabel, QCheckBox, QPushButton
 from PyQt5.QtGui import QColor, QTextCursor, QFont
 from PyQt5.QtCore import Qt
 import PyQt5.uic as uic
@@ -151,6 +151,10 @@ class Dario(QMainWindow):
                 self.profile_paramaters_table.setCellWidget(row, 0, widget)
                 if value_unit and value_type in ('float', 'int', 'string'):
                     widget.setSuffix(' ' + value_unit)
+
+                unset_button = QPushButton(widget)
+                unset_button.setText('Unset')
+                self.profile_paramaters_table.setCellWidget(row, 1, unset_button)
 
     def quit_app(self):
         # Options save method may be called here
