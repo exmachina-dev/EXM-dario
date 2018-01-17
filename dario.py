@@ -6,7 +6,11 @@ from PyQt5.QtWidgets import QTextEdit, QLineEdit, QListView, QTableWidget, QTabl
 from PyQt5.QtWidgets import QDoubleSpinBox, QSpinBox, QLabel, QCheckBox, QPushButton
 from PyQt5.QtGui import QColor, QTextCursor, QFont
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QTimer
+
 import PyQt5.uic as uic
+
+from pythonosc import dispatcher, osc_server, udp_client
 
 import logging as lg
 
@@ -57,6 +61,8 @@ class Dario(QMainWindow):
     UI_FILE = 'dario.ui'
     OPTIONS_FILE = 'dario_config.ini'
 
+    device_list_changed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
@@ -68,7 +74,23 @@ class Dario(QMainWindow):
 
         self.load_options()
 
+        self.osc_dispatcher = dispatcher.Dispatcher()
+
+        broadcast_ip = self.options.get('osc', 'broadcast_ip',
+                                        fallback='10.255.255.255')
+        reply_port = int(self.options.get('osc', 'reply_port', fallback='6969'))
+        self.osc_clients = dict()
+        self.osc_clients['broadcast'] = udp_client.SimpleUDPClient(
+                broadcast_ip, reply_port)
+
+        self.device_list = dict()
+
         self.init_UI()
+
+        ip = self.options.get('osc', 'ip', fallback='')
+        port = int(self.options.get('osc', 'port', fallback=6969))
+        self.osc_server = osc_server.ThreadingOSCUDPServer((ip, port), dispatcher)
+        logging.info('Listening on {}:{}'.format(ip, port))
 
     def init_UI(self):
         self.setWindowTitle('Dario')
@@ -91,6 +113,18 @@ class Dario(QMainWindow):
         logging.addHandler(self.embedded_log_handler)
         self.embedded_log_handler.setLevel(lg.DEBUG)
         logging.setLevel(lg.DEBUG)
+
+        self.device_table = self.main.findChild(QTableWidget, 'deviceTable')
+        self.device_table.setColumnCount(3)
+        self.device_table.setHorizontalHeaderLabels(('IP', 'S/N', ''))
+
+        # Connect signals and slots
+        scan_button = self.main.findChild(QPushButton, 'scanButton')
+        scan_button.clicked.connect(self.scan_devices)
+
+        self.device_list_changed.connect(self.update_device_table)
+
+        self.osc_dispatcher.map('/announce', self.add_to_device_list)
 
         self.show()
 
@@ -178,6 +212,63 @@ class Dario(QMainWindow):
     def load_options(self):
         self.options = ConfigParser()
         self.options.read(self.options_file)
+
+    # GUI methods
+
+    def update_device_table(self):
+        self.device_table.clear()
+
+        for sn, d in self.device_list.items():
+            r = self.device_table.rowCount()
+            dev_addr = '{0[ip]}/{0[mask]}:{0[port]}'.format(d)
+
+            sn_label = QLabel(sn)
+            dev_label = QLabel(dev_addr)
+            connect_button = QPushButton('Connect')
+            connect_button.clicked.connect(partial(self.connect_to_device, d))
+
+            self.device_table.insertRow(r)
+            self.device_table.setCellWidget(r, 0, sn_label)
+            self.device_table.setCellWidget(r, 1, dev_label)
+            self.device_table.setCellWidget(r, 1, connect_button)
+
+    # Connection methods
+
+    def add_to_device_list(addr, args):
+        '''
+        Add OSC device to list
+
+        Except reply like /announce 4417ARCP0001 10.84.212.169/8:6969
+        '''
+        try:
+            sn, net_addr = args
+            cidr_ip, port = net_addr.split(':')
+            ip, mask = net_addr.split('/')
+        except IndexError:
+            logging.error('Misformatted announce message: {}'.format(' '.join(args)))
+            return
+
+        if self.device_list.has_key(sn):
+            logging.warn('Replacing {!s} by {}'.format(self.device_list[sn], cidr_port))
+
+        dev = {
+                'ip': ip,
+                'port': int(port),
+                'mask': int(mask),
+                }
+        self.device_list[sn] = dev
+        osc_client = udp_client.SimpleUDPClient( ip, port)
+        self.osc_client[ip] = osc_client
+
+        self.devices_changed.emit()
+
+    # OSC communication
+
+    def scan_devices(self):
+        self.osc_clients['broadcast'].send('/identify')
+
+    def connect_to_device(self, ip):
+        pass
 
 class EmbeddedLogHandler(lg.Handler):
 

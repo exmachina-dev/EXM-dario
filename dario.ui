@@ -652,15 +652,8 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_6">
-                   <property name="text">
-                    <string>Connecto to :</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="4" column="0">
-                  <widget class="QPushButton" name="pushButton">
+                  <widget class="QPushButton" name="scanButton">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -672,21 +665,18 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="0">
-                  <widget class="QScrollArea" name="scrollArea_3">
-                   <property name="widgetResizable">
-                    <bool>true</bool>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>Connecto to :</string>
                    </property>
-                   <widget class="QWidget" name="scrollAreaWidgetContents_3">
-                    <property name="geometry">
-                     <rect>
-                      <x>0</x>
-                      <y>0</y>
-                      <width>548</width>
-                      <height>369</height>
-                     </rect>
-                    </property>
-                   </widget>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="Line" name="line">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
@@ -720,12 +710,8 @@
                    </item>
                   </layout>
                  </item>
-                 <item row="2" column="0">
-                  <widget class="Line" name="line">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
+                 <item row="6" column="0">
+                  <widget class="QTableWidget" name="deviceTable"/>
                  </item>
                 </layout>
                </item>
