@@ -52,36 +52,36 @@ _PROFILE_OPTIONS = {
     }
 }
 
+
 class Dario(QMainWindow):
-    UIFILE = '.\dario.ui'
-    OPTIONSFILE = '.\dario_config.ini'
+    UI_FILE = 'dario.ui'
+    OPTIONS_FILE = 'dario_config.ini'
 
     def __init__(self):
         super().__init__()
 
-        self.initUi()
+        self.init_UI()
 
-    def initUi(self):
+    def init_UI(self):
         self.setWindowTitle('Dario')
 
         _path = os.path.dirname(os.path.realpath(__file__))
 
-        self.OPTIONSFILE = _path + self.OPTIONSFILE
-        self.main = uic.loadUi(_path + self.UIFILE)
-        self.Profile_List = os.listdir(_path + '\profile')
+        self.options_file = os.path.join(_path, self.OPTIONS_FILE)
+        self.main = uic.loadUi(os.path.join(_path, self.UI_FILE))
+        self.profiles = os.listdir(os.path.join(_path, 'profiles'))
 
         self.setCentralWidget(self.main)
 
-        self._menuBar()
+        self.create_menubar()
 
-        self.doOptionLoad()
+        self.load_options()
 
-
-        self.profileView = self.main.findChild(QListView, 'profile_list' )
-        self.profileParameters = self.main.findChild(QTableWidget, 'profile_parameters')
-        self.doProfileList()
-        self.doProfileParameters()
-        self.doProfileLoad()
+        self.profile_view = self.main.findChild(QListView, 'profile_list' )
+        self.profile_paramaters_table = self.main.findChild(QTableWidget, 'profile_parameters')
+        self.get_profile_list()
+        self.create_profile_parameters_table()
+        self.load_profile()
 
         self.log_list = self.main.findChild(QTextEdit,'log_list')
         self.cmd_line = self.main.findChild(QLineEdit, 'cmd_line')
@@ -96,61 +96,67 @@ class Dario(QMainWindow):
         self.cmd_line.returnPressed.connect(self._cmd_send)
 
 
-    def _menuBar(self):
-        fileMenu = self.menuBar().addMenu('File')
+    def create_menubar(self):
+        file_menu = self.menuBar().addMenu('File')
 
-        quitAction = fileMenu.addAction('Quit')
-        quitAction.triggered.connect(self.doQuit)
+        quit_action = file_menu.addAction('Quit')
+        quit_action.triggered.connect(self.quit_app)
 
 
-        fileMenu = self.menuBar().addMenu('Tools')
+        file_menu = self.menuBar().addMenu('Tools')
 
-        aboutAction = self.menuBar().addAction('About')
-        aboutAction.triggered.connect(self.doAbout)
+        about_action = self.menuBar().addAction('About')
+        about_action.triggered.connect(self.show_about_window)
 
-    def doProfileList(self):
-        for i in self.Profile_List :
-            self.profileView.addItem(i)
-            if i == self._defaultProfile :
-                self._currentProfile = self.profileView.findItems(i, Qt.MatchExactly)
-                self.profileView.setCurrentItem(self._currentProfile[0])
-                self._currentProfile[0].setFont(QFont('MS Shell Dlg 2',8,QFont.Bold))
+    def get_profile_list(self):
+        for profile in self.profiles :
+            self.profile_view.addItem(profile)
+            if profile == self.default_profile :
+                profile_matches = self.profile_view.findItems(profile, Qt.MatchExactly)
+                if len(profile_matches) == 1:
+                    self.current_profile = profile_matches[0]
+                self.profile_view.setCurrentItem(self.current_profile)
+                self.current_profile.setFont(QFont('MS Shell Dlg 2', 8, QFont.Bold))
 
-    def doProfileLoad(self):
-        self._ProfileLoaded =  ConfigParser()
+    def load_profile(self):
+        self.profile_loaded = ConfigParser()
         _path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'profile', self._defaultProfile)
-        self._ProfileLoaded.read(_path)
+        self.profile_loaded.read(_path)
 
-
-    def doProfileParameters(self):
+    def create_profile_parameters_table(self):
         _OPTION = ConfigParser()
         _OPTION.read_dict(_PROFILE_OPTIONS)
 
-        self.profileParameters.setColumnCount(2)
-        self.profileParameters.setHorizontalHeaderLabels(('Values', 'Reset'))
+        self.profile_paramaters_table.setColumnCount(2)
+        self.profile_paramaters_table.setHorizontalHeaderLabels(('Values', ''))
 
         for section in _PROFILE_OPTIONS.values():
             for option, value in section.items():
-                row = self.profileParameters.rowCount()
-                self.profileParameters.insertRow(row)
-                self.profileParameters.setVerticalHeaderItem(row, QTableWidgetItem(option))
-                if value[0] == 'float':
-                    self.profileParameters.setCellWidget(row,0, QDoubleSpinBox())
-                    self.profileParameters.cellWidget(row,0).setSuffix(value[1])
-                elif value[0] == 'int':
-                    self.profileParameters.setCellWidget(row,0, QSpinBox())
-                    self.profileParameters.cellWidget(row,0).setSuffix(value[1])
-                elif value[0] == 'string':
-                    self.profileParameters.setCellWidget(row,0, QLineEdit())
-                    self.profileParameters.cellWidget(row,0).setSuffix(value[1])
-                elif value[0] == 'bool':
-                    self.profileParameters.setCellWidget(row,0, QCheckBox())
+                value_type, value_unit = value
+                row = self.profile_paramaters_table.rowCount()
 
-    def doQuit(self):
+                self.profile_paramaters_table.insertRow(row)
+                self.profile_paramaters_table.setVerticalHeaderItem(row, QTableWidgetItem(option))
+
+                widget = None
+                if value_type == 'float':
+                    widget = QDoubleSpinBox()
+                elif value_type == 'int':
+                    widget = QSpinBox()
+                elif value_type == 'string':
+                    widget = QLineEdit()
+                elif value_type == 'bool':
+                    widget = QCheckBox()
+
+                self.profile_paramaters_table.setCellWidget(row, 0, widget)
+                if value_unit and value_type in ('float', 'int', 'string'):
+                    widget.setSuffix(' ' + value_unit)
+
+    def quit_app(self):
         # Options save method may be called here
         QApplication.quit()
 
-    def doAbout(self):
+    def show_about_window(self):
         about = QMessageBox.information(self, 'About',
                 '''Dario - Version: v''' + str(VERSION),
                 QMessageBox.Ok)
@@ -158,8 +164,8 @@ class Dario(QMainWindow):
     def _cmd_send(self):
         self.cmd_line.clear()
 
-    def doOptionLoad(self):
-        with open(self.OPTIONSFILE, 'r') as f:
+    def load_options(self):
+        with open(self.options_file, 'r') as f:
             cfg = {}
             for l in f.readlines():
                 try :
@@ -227,4 +233,3 @@ if __name__ == '__main__':
     w = Dario()
 
     sys.exit(app.exec_())
-
