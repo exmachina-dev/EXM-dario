@@ -749,7 +749,7 @@
                <bool>true</bool>
               </property>
               <attribute name="title">
-               <string>Configutation</string>
+               <string>Configuration</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_3">
                <item>
