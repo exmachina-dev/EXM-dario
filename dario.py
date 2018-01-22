@@ -265,7 +265,7 @@ class Dario(QMainWindow):
     # OSC communication
 
     def scan_devices(self):
-        self.osc_clients['broadcast'].send('/identify')
+        self.osc_clients['broadcast'].send_message('/identify', ())
 
     def connect_to_device(self, ip):
         pass
