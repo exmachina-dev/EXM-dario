@@ -80,6 +80,7 @@ class Dario(QMainWindow):
         self.osc_dispatcher.map("/config/profile/list/reply", self.create_profiles_list)
         self.osc_dispatcher.map("/config/profile/list/ok", self.profiles_list_view)
 
+        self.osc_dispatcher.map("/config/profile/list_options/reply",self.create_profile_options)
         broadcast_ip = self.options.get('osc', 'broadcast_ip',
                                         fallback='10.255.255.255')
         reply_port = int(self.options.get('osc', 'reply_port', fallback='6969'))
@@ -136,7 +137,8 @@ class Dario(QMainWindow):
 
         self.profiles_list = []
         self.get_profile_list()
-        self.create_profile_parameters_table()
+        self.get_profile_loaded()
+        self.get_profile_option()
         self.load_profile()
 
         self.show()
@@ -159,9 +161,14 @@ class Dario(QMainWindow):
     def get_profile_list(self):
         self.osc_clients['broadcast'].send_message("/config/profile/list", ())
 
+    def get_profile_loaded(self):
+        self.osc_clients['broadcast'].send_message("/config/get", ('machine:profile'))
+
+    def get_profile_option(self):
+        self.osc_clients['broadcast'].send_message("/config/profile/list_options", ())
+
     def create_profiles_list(self, args, value):
         self.profiles_list.append(value)
-        print(self.profiles_list)
 
     def profiles_list_view(self, args, value):
         for profile in self.profiles_list:
