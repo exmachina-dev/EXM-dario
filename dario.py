@@ -77,6 +77,8 @@ class Dario(QMainWindow):
 
         self.osc_dispatcher = dispatcher.Dispatcher()
         self.osc_dispatcher.map("/*",print)
+        self.osc_dispatcher.map("/config/profile/list/reply", self.create_profiles_list)
+        self.osc_dispatcher.map("/config/profile/list/ok", self.profiles_list_view)
 
         broadcast_ip = self.options.get('osc', 'broadcast_ip',
                                         fallback='10.255.255.255')
@@ -89,7 +91,6 @@ class Dario(QMainWindow):
 
         self.device_list = dict()
 
-        self.init_UI()
 
         ip = self.options.get('osc', 'ip', fallback='')
         port = int(self.options.get('osc', 'port', fallback=6969))
@@ -97,8 +98,10 @@ class Dario(QMainWindow):
         self.osc_server = osc_server.ThreadingOSCUDPServer((ip, port), self.osc_dispatcher)
 
         logging.info('Listening on {}'.format(self.osc_server.server_address))
-        server_thread =threading.Thread(target = self.osc_server.serve_forever)
-        server_thread.start()
+        self.server_thread =threading.Thread(target = self.osc_server.serve_forever)
+        self.server_thread.start()
+
+        self.init_UI()
 
     def init_UI(self):
         self.setWindowTitle('Dario')
@@ -131,6 +134,7 @@ class Dario(QMainWindow):
 
         self.osc_dispatcher.map('/announce', self.add_to_device_list)
 
+        self.profiles_list = []
         self.get_profile_list()
         self.create_profile_parameters_table()
         self.load_profile()
@@ -153,7 +157,15 @@ class Dario(QMainWindow):
         about_action.triggered.connect(self.show_about_window)
 
     def get_profile_list(self):
-        self.osc_clients['broadcast'].send_message("/test",1)
+        self.osc_clients['broadcast'].send_message("/config/profile/list", ())
+
+    def create_profiles_list(self, args, value):
+        self.profiles_list.append(value)
+        print(self.profiles_list)
+
+    def profiles_list_view(self, args, value):
+        for profile in self.profiles_list:
+            self.profile_view.addItem(profile)
 
         '''
         files = os.listdir(self.profiles_path)
