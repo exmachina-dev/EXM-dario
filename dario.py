@@ -10,11 +10,12 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal, QTimer
 
 import PyQt5.uic as uic
 
-from pythonosc import dispatcher, osc_server, udp_client
-
+from pythonosc import dispatcher, osc_server, udp_client, osc_message_builder
 import logging as lg
 
 from configparser import ConfigParser
+
+import threading
 
 import os.path
 from os import listdir
@@ -75,6 +76,7 @@ class Dario(QMainWindow):
         self.load_options()
 
         self.osc_dispatcher = dispatcher.Dispatcher()
+        self.osc_dispatcher.map("/*",print)
 
         broadcast_ip = self.options.get('osc', 'broadcast_ip',
                                         fallback='10.255.255.255')
@@ -83,14 +85,20 @@ class Dario(QMainWindow):
         self.osc_clients['broadcast'] = udp_client.SimpleUDPClient(
                 broadcast_ip, reply_port)
 
+        logging.info('Sending on {}:{}'.format(broadcast_ip,reply_port))
+
         self.device_list = dict()
 
         self.init_UI()
 
         ip = self.options.get('osc', 'ip', fallback='')
         port = int(self.options.get('osc', 'port', fallback=6969))
-        self.osc_server = osc_server.ThreadingOSCUDPServer((ip, port), dispatcher)
-        logging.info('Listening on {}:{}'.format(ip, port))
+
+        self.osc_server = osc_server.ThreadingOSCUDPServer((ip, port), self.osc_dispatcher)
+
+        logging.info('Listening on {}'.format(self.osc_server.server_address))
+        server_thread =threading.Thread(target = self.osc_server.serve_forever)
+        server_thread.start()
 
     def init_UI(self):
         self.setWindowTitle('Dario')
@@ -102,9 +110,6 @@ class Dario(QMainWindow):
 
         self.profile_view = self.main.findChild(QListView, 'profile_list' )
         self.profile_paramaters_table = self.main.findChild(QTableWidget, 'profile_parameters')
-        self.get_profile_list()
-        self.create_profile_parameters_table()
-        self.load_profile()
 
         self.log_list = self.main.findChild(QTextEdit,'log_list')
         self.cmd_line = self.main.findChild(QLineEdit, 'cmd_line')
@@ -126,6 +131,10 @@ class Dario(QMainWindow):
 
         self.osc_dispatcher.map('/announce', self.add_to_device_list)
 
+        self.get_profile_list()
+        self.create_profile_parameters_table()
+        self.load_profile()
+
         self.show()
 
         self.cmd_line.returnPressed.connect(self._cmd_send)
@@ -144,6 +153,9 @@ class Dario(QMainWindow):
         about_action.triggered.connect(self.show_about_window)
 
     def get_profile_list(self):
+        self.osc_clients['broadcast'].send_message("/test",1)
+
+        '''
         files = os.listdir(self.profiles_path)
         def is_conf(path):
             return str(path).endswith('.conf')
@@ -157,7 +169,7 @@ class Dario(QMainWindow):
                     self.current_profile = profile_matches[0]
                 self.profile_view.setCurrentItem(self.current_profile)
                 self.current_profile.setFont(QFont('MS Shell Dlg 2', 8, QFont.Bold))
-
+        '''
     def load_profile(self):
         self.profile_loaded = ConfigParser()
         _file = self.options['configuration']['default_profile'] + '.conf'
@@ -170,28 +182,30 @@ class Dario(QMainWindow):
 
         self.profile_paramaters_table.setColumnCount(2)
         self.profile_paramaters_table.setHorizontalHeaderLabels(('Values', ''))
-
-        for section in _PROFILE_OPTIONS.values():
-            for option, value in section.items():
+        profile_widget_list = {}
+        for section, options in _PROFILE_OPTIONS.items():
+            for option, value in options.items():
                 value_type, value_unit = value
                 row = self.profile_paramaters_table.rowCount()
-
                 self.profile_paramaters_table.insertRow(row)
                 self.profile_paramaters_table.setVerticalHeaderItem(row, QTableWidgetItem(option))
-
                 widget = None
                 if value_type == 'float':
                     widget = QDoubleSpinBox()
                 elif value_type == 'int':
                     widget = QSpinBox()
-                elif value_type == 'string':
+                elif value_type == 'str':
                     widget = QLineEdit()
                 elif value_type == 'bool':
                     widget = QCheckBox()
 
                 self.profile_paramaters_table.setCellWidget(row, 0, widget)
+
+
                 if value_unit and value_type in ('float', 'int', 'string'):
                     widget.setSuffix(' ' + value_unit)
+
+                profile_widget_list[section + ':' + option] = widget
 
                 unset_button = QPushButton(widget)
                 unset_button.setText('Unset')
@@ -266,6 +280,7 @@ class Dario(QMainWindow):
 
     def scan_devices(self):
         self.osc_clients['broadcast'].send_message('/identify', ())
+        logging.info('send : /identify')
 
     def connect_to_device(self, ip):
         pass
